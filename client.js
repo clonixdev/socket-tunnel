@@ -9,6 +9,8 @@ module.exports = (options) => {
     const ss = require('socket.io-stream');
     let socket = require('socket.io-client')(options['server']);
 
+	console.log(new Date() + ': clonix socket');
+		
     socket.on('connect', () => {
       console.log(new Date() + ': connected');
       console.log(new Date() + ': requesting subdomain ' + options['subdomain'] + ' via ' + options['server']);
