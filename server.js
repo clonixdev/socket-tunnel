@@ -102,6 +102,17 @@ module.exports = (options) => {
       }
 
       let subdomainSocket = socketsBySubdomain[subdomain];
+	  
+	  
+	   // Si no se encuentra el subdominio exacto, buscar un wildcard
+	   if (!subdomainSocket) {
+		  const baseDomain = subdomain.split('.').slice(1).join('.');
+		  const wildcardKey = `*.${baseDomain}`;
+		  if (socketsBySubdomain[wildcardKey] && socketsBySubdomain[wildcardKey].isWildcard) {
+			subdomainSocket = socketsBySubdomain[wildcardKey].socket;
+		  }
+		}
+		  
       if (!subdomainSocket) {
         return reject(new Error(`${subdomain} is currently unregistered or offline.`));
       }
@@ -180,9 +191,10 @@ module.exports = (options) => {
       }
 
       // store a reference to this socket by the subdomain claimed
-      socketsBySubdomain[reqNameNormalized] = socket;
-      socket.requestedName = reqNameNormalized;
-      console.log(new Date() + ': ' + reqNameNormalized + ' registered successfully');
+     // socketsBySubdomain[reqNameNormalized] = socket;
+		socketsBySubdomain[reqNameNormalized] = { socket, isWildcard: reqNameNormalized.startsWith('*.') };
+		socket.requestedName = reqNameNormalized;
+		console.log(new Date() + ': ' + reqNameNormalized + ' registered successfully');
 
       if (responseCb) {
         responseCb(null);
