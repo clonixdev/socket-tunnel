@@ -78,14 +78,19 @@ module.exports = (options) => {
       // without a hostname, we won't know who the request is for
       let hostname = req.headers.host;
       if (!hostname) {
+		console.log("Error Hostname","Host",hostname);
         return reject(new Error('Invalid hostname'));
       }
 
       // make sure we received a subdomain
-      let subdomain = tldjs.getSubdomain(hostname).toLowerCase();
+      let subdomain = tldjs.getSubdomain(hostname);
       if (!subdomain) {
+		console.log("Error Subdomain","Subdomain",subdomain,"Host",hostname);
         return reject(new Error('Invalid subdomain'));
       }
+	  
+	  console.log("Subdomain",subdomain,"Host",hostname);
+	  subdomain = subdomain.toLowerCase();
 
       // tldjs library return subdomain as all subdomain path from the main domain.
       // Example:

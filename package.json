@@ -3,6 +3,13 @@
   "name": "socket-tunnel",
   "description": "Tunnel HTTP Connections via socket.io streams.",
   "version": "1.0.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-version": "docker build -f Dockerfile -t clonixdev/socket-tunnel:%npm_package_version% .",
+    "version:patch": "npm version patch",
+    "build": "docker build -f Dockerfile -t clonixdev/socket-tunnel:lastest .",
+    "push-docker": "docker push clonixdev/socket-tunnel:%npm_package_version%"
+  },
   "dependencies": {
     "is-valid-domain": "0.0.5",
     "optimist": "^0.6.1",
