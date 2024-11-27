@@ -2,7 +2,7 @@
   "author": "Eric Barch <ebarch@nooplabs.com>",
   "name": "socket-tunnel",
   "description": "Tunnel HTTP Connections via socket.io streams.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build-version": "docker build -f Dockerfile -t clonixdev/socket-tunnel:%npm_package_version% .",
