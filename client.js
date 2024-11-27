@@ -46,6 +46,7 @@ module.exports = (options) => {
         s.pipe(client).pipe(s);
 
         s.on('end', () => {
+		  console.log(new Date() + ': Cliente desconectado');
           client.destroy();
         });
 
@@ -54,11 +55,15 @@ module.exports = (options) => {
 
       client.setTimeout(IDLE_SOCKET_TIMEOUT_MILLISECONDS);
       client.on('timeout', () => {
+		console.log(new Date() + ': Cliente timeout');
         client.end();
       });
 
       client.on('error', () => {
         // handle connection refusal (create a stream and immediately close it)
+		
+		console.log(new Date() + ': Cliente error 1');
+				
         let s = ss.createStream();
         ss(socket).emit(clientId, s);
         s.end();
