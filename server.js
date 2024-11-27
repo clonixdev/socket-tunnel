@@ -173,7 +173,7 @@ module.exports = (options) => {
       let reqNameNormalized = requestedName.toString().toLowerCase().replace(/[^0-9a-z-.]/g, '');
 
       // make sure the client is requesting a valid subdomain
-      if (reqNameNormalized.length === 0 || !isValidDomain(`${reqNameNormalized}.example.com`)) {
+	if (reqNameNormalized.length === 0 || !isValidDomain(reqNameNormalized.replace(/^\*\./, '') + '.example.com')) {
         console.log(new Date() + ': ' + reqNameNormalized + ' -- bad subdomain. disconnecting client.');
         if (responseCb) {
           responseCb('bad subdomain');
