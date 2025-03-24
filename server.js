@@ -47,31 +47,30 @@ module.exports = (options) => {
   });
 
   // HTTP upgrades (i.e. websockets) are NOT currently supported because socket.io relies on them
-  // server.on('upgrade', (req, socket, head) => {
-  //   getTunnelClientStreamForReq(req).then((tunnelClientStream) => {
-  //     tunnelClientStream.on('error', () => {
-  //       req.destroy();
-  //       socket.destroy();
-  //       tunnelClientStream.destroy();
-  //     });
+  server.on('upgrade', (req, socket, head) => {
+     getTunnelClientStreamForReq(req).then((tunnelClientStream) => {
+       tunnelClientStream.on('error', () => {
+         req.destroy();
+         socket.destroy();
+         tunnelClientStream.destroy();
+       });
+		// get the upgrade request and send it to the tunnel client
+	    let messageParts = getHeaderPartsForReq(req);
 
-  //     // get the upgrade request and send it to the tunnel client
-  //     let messageParts = getHeaderPartsForReq(req);
+       messageParts.push(''); // Push delimiter
 
-  //     messageParts.push(''); // Push delimiter
+       let message = messageParts.join('\r\n');
+       tunnelClientStream.write(message);
 
-  //     let message = messageParts.join('\r\n');
-  //     tunnelClientStream.write(message);
-
-  //     // pipe data between ingress socket and tunnel client
-  //     tunnelClientStream.pipe(socket).pipe(tunnelClientStream);
-  //   }).catch((subdomainErr) => {
-  //     // if we get an invalid subdomain, this socket is most likely being handled by the root socket.io server
-  //     if (!subdomainErr.message.includes('Invalid subdomain')) {
-  //       socket.end();
-  //     }
-  //   });
-  // });
+       // pipe data between ingress socket and tunnel client
+       tunnelClientStream.pipe(socket).pipe(tunnelClientStream);
+     }).catch((subdomainErr) => {
+       // if we get an invalid subdomain, this socket is most likely being handled by the root socket.io server
+       if (!subdomainErr.message.includes('Invalid subdomain')) {
+         socket.end();
+       }
+     });
+   });
 
   function getTunnelClientStreamForReq (req) {
     return new Promise((resolve, reject) => {
