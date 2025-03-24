@@ -110,7 +110,8 @@ module.exports = (options) => {
        }
        const subdomain = getSubdomain(options, hostname);
        const clientId = subdomain.toLowerCase();
-       const client = socketsByName[clientId];
+       const client = getClient(clientId,socketsByName);
+       
        if (!client) {
            socket.end();
            return;
@@ -250,7 +251,6 @@ function getSubdomain(options, hostname) {
 function getClient(clientId,socketsByName){
     console.log("Get Client ",clientId,socketsByName);
     let socketFind = socketsByName[clientId];
-
     if(!socketFind){
         const baseDomain = clientId.split('.').slice(1).join('.');
         const wildcardKey = `*.${baseDomain}`;
@@ -258,8 +258,6 @@ function getClient(clientId,socketsByName){
             socketFind = socketsByName[wildcardKey];
         }
     }
-
-    console.log("Socket Find ",socketFind);
     return socketFind;
 }
 
