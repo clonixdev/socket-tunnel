@@ -2,25 +2,30 @@
   "author": "Eric Barch <ebarch@nooplabs.com>",
   "name": "socket-tunnel",
   "description": "Tunnel HTTP Connections via socket.io streams.",
-  "version": "1.0.5",
+  "version": "1.1.1",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build-version": "docker build -f Dockerfile -t clonixdev/socket-tunnel:%npm_package_version% .",
     "version:patch": "npm version patch",
     "build": "docker build -f Dockerfile -t clonixdev/socket-tunnel:lastest .",
-    "push-docker": "docker push clonixdev/socket-tunnel:%npm_package_version%"
+    "push-docker": "docker push clonixdev/socket-tunnel:%npm_package_version%",
+    "start:server": "node bin/server",
+    "start:client": "node bin/client",
+    "start:server:dev": "DEBUG=* node bin/server",
+    "start:client:dev": "DEBUG=* node bin/client"
   },
   "dependencies": {
     "is-valid-domain": "0.0.5",
     "optimist": "^0.6.1",
-    "socket.io": "^2.1.0",
-    "socket.io-client": "^2.1.0",
-    "socket.io-stream": "^0.9.1",
-    "tldjs": "^2.3.1",
-    "uuid": "^3.2.1"
+    "socket.io": "^4.5.2",
+    "socket.io-client": "^4.5.2",
+    "socket.io-stream": "0.9.X",
+    "tldjs": "2.1.X",
+    "uuid": "3.1.X"
   },
   "bin": {
-    "socket-tunnel": "./bin/client"
+    "st-client": "./bin/client",
+    "st-server": "./bin/server"
   },
   "license": "MIT"
 }

@@ -29,7 +29,7 @@ if (argv.help) {
 
 if (!argv['server'] || !argv['subdomain'] || !argv['port']) {
   for (var key in ['server', 'subdomain', 'port']) {
-    if (argv[key]) continue;
+    if (!!argv[key]) continue;
 
     console.log('Error: Required option, but nothing found');
 
