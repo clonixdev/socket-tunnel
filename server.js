@@ -46,8 +46,11 @@ module.exports = (options) => {
     });
   });
 
+
   // HTTP upgrades (i.e. websockets) are NOT currently supported because socket.io relies on them
   server.on('upgrade', (req, socket, head) => {
+
+
      getTunnelClientStreamForReq(req).then((tunnelClientStream) => {
        tunnelClientStream.on('error', () => {
          req.destroy();
@@ -63,7 +66,25 @@ module.exports = (options) => {
        tunnelClientStream.write(message);
 
        // pipe data between ingress socket and tunnel client
-       tunnelClientStream.pipe(socket).pipe(tunnelClientStream);
+       //tunnelClientStream.pipe(socket).pipe(tunnelClientStream);
+
+       const ws = new WebSocket(`ws://localhost:4000`);
+
+       ws.on('open', () => {
+         socket.on('data', (chunk) => ws.send(chunk));
+         ws.on('message', (data) => socket.write(data));
+       });
+   
+       ws.on('error', () => {
+         socket.destroy();
+         tunnelClientStream.destroy();
+       });
+   
+       socket.on('end', () => {
+         ws.close();
+         tunnelClientStream.destroy();
+       });
+
      }).catch((subdomainErr) => {
        // if we get an invalid subdomain, this socket is most likely being handled by the root socket.io server
        if (!subdomainErr.message.includes('Invalid subdomain')) {
@@ -72,6 +93,23 @@ module.exports = (options) => {
      });
    });
 
+   // Servidor HTTP para WebSockets en puerto 4000
+  let serverWs = http.createServer();
+  let ioWs = socketIo(serverWs);
+
+  ioWs.on('connection', (socket) => {
+    console.log('WebSocket conectado en puerto 4000');
+
+    socket.on('message', (data) => {
+      console.log('Mensaje recibido:', data);
+    });
+
+    socket.on('disconnect', () => {
+      console.log('WebSocket desconectado');
+    });
+  });
+
+  
   function getTunnelClientStreamForReq (req) {
     return new Promise((resolve, reject) => {
       // without a hostname, we won't know who the request is for
@@ -159,6 +197,7 @@ module.exports = (options) => {
     }
   }
 
+  
   // socket.io instance
   let io = require('socket.io')(server);
   io.on('connection', (socket) => {
@@ -213,6 +252,8 @@ module.exports = (options) => {
 
   // http server
   server.listen(options.port, options.hostname);
+  serverWs.listen(4000, options.hostname);
 
   console.log(`${new Date()}: socket-tunnel server started on ${options.hostname}:${options.port}`);
+  console.log(`${new Date()}: Servidor WebSocket iniciado en ${options.hostname}:4000`);
 };
